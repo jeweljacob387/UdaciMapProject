@@ -1,5 +1,6 @@
 var map;
 var geocoder;
+var infoWindow
 var clientID = "JSYO35QAEAMVF4Q5S41MJL0BX1LX34E5WC31B0PXSGXLD5M2";
 var clientSecret= "VV2E2TG1WMDPUHCOAPB1SJHPYD1TOHO0J3K53YOMBRWXU1PR";
 //load map in the map div and fetch lovation details
@@ -12,6 +13,7 @@ function initMap() {
   myLocations.forEach(function(venue) {
     let latLng = venueFinder(venue);
   });
+  infoWindow = new google.maps.InfoWindow({content:""});
   //wait for Geocoding api to load the lattitue , Longitude and the address
   wait();
 
@@ -23,7 +25,7 @@ function wait() {
   if(!myLocations[len].lat) {
     setTimeout(wait,200);
   } else {
-    ko.applyBindings(new myViewModel());
+    ko.applyBindings(new MyViewModel());
   }
 }
 //locations to be marked
@@ -91,8 +93,8 @@ var Venue = function(obj) {
 		alert("oops!, try refrshing the page. foursquare api shows some error");
 	});
 
-  this.infoWindow = new google.maps.InfoWindow({content:
-    `<div class="info-window-content">
+
+  this.contentString = `<div class="info-window-content">
       <div class="title">
         <b>${self.name}</b>
       </div>
@@ -109,7 +111,6 @@ var Venue = function(obj) {
         <p>Longitude:<em>${self.lng}</em></p>
       </div>
     </div>`
-  });
 
   this.marker = new google.maps.Marker({
 			position: new google.maps.LatLng(obj.lat, obj.lng),
@@ -132,25 +133,9 @@ var Venue = function(obj) {
 	};
 
   this.marker.addListener('click', function(){
-    self.infoWindow.setContent(`<div class="info-window-content">
-      <div class="title">
-        <b>${self.name}</b>
-      </div>
-      <div class="content">
-        <p>${self.addr}</p>
-      </div>
-      <div class="content">
-        <p>Country:<em>${self.country}</em></p>
-      </div>
-      <div class="content">
-        <p>Latitude:<em>${self.lat}</em></p>
-      </div>
-      <div class="content">
-        <p>Longitude:<em>${self.lng}</em></p>
-      </div>
-    </div>`);
+    infoWindow.setContent(self.contentString);
 
-    self.infoWindow.open(map, this);
+    infoWindow.open(map, this);
     self.marker.setAnimation(google.maps.Animation.BOUNCE);
     setTimeout(function() {
       self.marker.setAnimation(null);
@@ -160,8 +145,8 @@ var Venue = function(obj) {
 
 };
 
-// knockout viewmodel function
-function myViewModel() {
+// knockout viewmodel class function
+function MyViewModel() {
   var self = this;
   this.locationList = ko.observableArray([]);
   this.filter = ko.observable("");
