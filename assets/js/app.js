@@ -72,6 +72,32 @@ function venueFinder(venue) {
       });
 }
 
+function setCountry(cls) {
+  setTimeout(function () {
+    if(!cls.country){
+      setCountry(cls);
+    } else {
+      cls.contentString = `<div class="info-window-content">
+          <div class="title">
+            <b>${cls.name}</b>
+          </div>
+          <div class="content">
+            <p>${cls.addr}</p>
+          </div>
+          <div class="content">
+            <p>Country:<em>${cls.country}</em></p>
+          </div>
+          <div class="content">
+            <p>Longitude:<em>${cls.lat}</em></p>
+          </div>
+          <div class="content">
+            <p>Longitude:<em>${cls.lng}</em></p>
+          </div>
+        </div>`
+    }
+  })
+}
+
 // location constructer
 var Venue = function(obj) {
   var self = this;
@@ -93,25 +119,7 @@ var Venue = function(obj) {
 		alert("oops!, try refrshing the page. foursquare api shows some error");
 	});
 
-
-  this.contentString = `<div class="info-window-content">
-      <div class="title">
-        <b>${self.name}</b>
-      </div>
-      <div class="content">
-        <p>${self.addr}</p>
-      </div>
-      <div class="content">
-        <p>Country:<em>${self.country}</em></p>
-      </div>
-      <div class="content">
-        <p>Longitude:<em>${self.lat}</em></p>
-      </div>
-      <div class="content">
-        <p>Longitude:<em>${self.lng}</em></p>
-      </div>
-    </div>`
-
+  setCountry(self);
   this.marker = new google.maps.Marker({
 			position: new google.maps.LatLng(obj.lat, obj.lng),
 			map: map,
